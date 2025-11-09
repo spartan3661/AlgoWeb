@@ -10,7 +10,7 @@ export class LogicGrid {
 
   #snapshot = [];
   #dirty = false;
-
+    #target = []
   constructor(width, height) {
     this.set_new_dimensions(width, height);
     this.set_start(0, 0);
@@ -59,7 +59,22 @@ export class LogicGrid {
     this.#dirty = true;
     this.#emit();
   }
+  reset_grid(){
+    this.beginBatch();
+    try{
+        for (let i = 0; i < this.#height; i++){
+            for (let j = 0; j < this.#width; j++){
+                if (this.#grid[i][j] == 2){
+                    this.#grid[i][j] = 0;
+                } 
+            }
+        }
+    } finally {
+        this.endBatch();
+    }
 
+
+  }
   set_start(row, col) {
     if (!this.#inBounds(row, col)) {
       console.error("Start not in grid");
@@ -75,6 +90,12 @@ export class LogicGrid {
 
   set_cell(row, col, value) {
     if (!this.#inBounds(row, col)) return;
+    if (value == 1){
+        this.#start = [row, col];
+    }
+    if (value == 3){
+        this.#target = [row, col];
+    }
     this.#grid[row][col] = value;
     this.#dirty = true;
     this.#emit();
@@ -98,4 +119,12 @@ export class LogicGrid {
       console.log(this.#grid[r].join(" "));
     }
   }
+
+    get_start() {
+        return this.#start;
+    }
+
+    get_target() {
+        return this.#target;
+    }
 }
